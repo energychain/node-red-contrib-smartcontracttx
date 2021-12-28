@@ -17,8 +17,8 @@ Install using Node-RED Package Manager (Palett)
 ## Input (msg.payload)
 
 In order to call a method of a SmartContract specify a JSON in `msg.payload` containing the method name as `method` and all required arguments in an array as `args`.
-  
-'''Javascript
+
+'''javascript
 {
   "method":"transfer",
   "args":["0x6B342cE1cb8671DDeeC57B62D78EB9333898d7da"]
