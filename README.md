@@ -21,7 +21,7 @@ In order to call a method of a SmartContract specify a JSON in `msg.payload` con
 ```javascript
 {
   "method":"transfer",
-  "args":["0x6B342cE1cb8671DDeeC57B62D78EB9333898d7da"]
+  "args":["0x6B342cE1cb8671DDeeC57B62D78EB9333898d7da",20]
 }
 ```
 
