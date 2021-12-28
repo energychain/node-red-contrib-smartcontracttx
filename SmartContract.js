@@ -14,8 +14,12 @@ module.exports = function(RED) {
           const instance = new ethers.Contract(node.contract.address, node.contract.ABI, wallet);
           if((typeof msg.payload !== 'undefined') && (typeof msg.payload.method !== 'undefined')) {
             if(typeof msg.payload.args == 'undefined') msg.payload.args = [];
-            let res = await instance[msg.payload.method].apply(this,msg.payload.args);
-            node.send({payload:res});
+            try {
+              let res = await instance[msg.payload.method].apply(this,msg.payload.args);
+              node.send({payload:res});
+            } catch(e) {
+              console.log(e);
+            }
           }
           node.status({fill:"green",shape:"dot",text:(ethers.utils.formatEther(await wallet.getBalance()) * 1).toFixed(4)+" ETH"});
         });

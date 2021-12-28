@@ -1,6 +1,6 @@
 {
   "name": "node-red-contrib-smartcontracttx",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Allows to run transactions on Ethereum based blockchains from within Node RED",
   "main": "index.js",
   "scripts": {
@@ -10,7 +10,7 @@
     "nodered",
     "node-red",
     "contrib",
-    "ehtereum",
+    "ethereum",
     "blockchain",
     "transaction",
     "smartcontract"
