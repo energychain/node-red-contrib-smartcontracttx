@@ -1,0 +1,30 @@
+{
+  "name": "node-red-contrib-smartcontracttx",
+  "version": "1.0.0",
+  "description": "Allows to run transactions on Ethereum based blockchains from within Node RED",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "nodered",
+    "node-red",
+    "contrib",
+    "ehtereum",
+    "blockchain",
+    "transaction",
+    "smartcontract"
+  ],
+  "author": "STROMDAO GmbH <dev@stromdao.com>",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "ethers": "^5.5.2"
+  },
+  "node-red": {
+    "nodes": {
+      "SmartContract": "SmartContract.js",
+      "DLTConnection": "DLTConnection.js",
+      "Contract": "Contract.js"
+    }
+  }
+}

@@ -1,0 +1,36 @@
+<script type="text/javascript">
+    RED.nodes.registerType('SmartContract',{
+        category: 'Ethereum',
+        color: 'rgb(20, 122, 80)',
+        defaults: {
+            name: {value:""},
+            Connection: {value:"", type:"DLTConnection"},
+            Contract: {value:"", type:"Contract"}
+        },
+        inputs:1,
+        outputs:1,
+        icon: "file.png",
+        label: function() {
+            return this.name||"SmartContract";
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="SmartContract">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-Connection"><i class="fa fa-tag"></i> Connection</label>
+        <input type="text" id="node-input-Connection" placeholder="DLT Connection">
+    </div>
+    <div class="form-row">
+        <label for="node-input-Contract"><i class="fa fa-tag"></i> Contract</label>
+        <input type="text" id="node-input-Contract" placeholder="Contract to connect to">
+    </div>
+</script>
+
+<script type="text/html" data-help-name="SmartContract">
+    <p>Access a SmartContract function (call or transaction) using a given rpcUrl to connect to blockchain and authenticate with given privateKey.</p>
+</script>
