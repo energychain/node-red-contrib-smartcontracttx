@@ -25,6 +25,20 @@ In order to call a method of a SmartContract specify a JSON in `msg.payload` con
 }
 ```
 
+### Injection of unsecure values
+
+If configuration option `Allow Insecure Inject` is set additional values might be specified in input `msg.payload` and will overwrite configured values:
+
+```javascript
+{
+  ...
+  "privateKey":"0x12356....",
+  "contract":"0x123456...",
+  "abi": [...]
+  ...
+}
+```
+
 ## Maintainer / Imprint
 
 <addr>

@@ -5,7 +5,8 @@
         defaults: {
             name: {value:""},
             Connection: {value:"", type:"DLTConnection"},
-            Contract: {value:"", type:"Contract"}
+            Contract: {value:"", type:"Contract"},
+            AllowInject: {value:"", type:"boolean"}
         },
         inputs:1,
         outputs:1,
@@ -28,6 +29,10 @@
     <div class="form-row">
         <label for="node-input-Contract"><i class="fa fa-tag"></i> Contract</label>
         <input type="text" id="node-input-Contract" placeholder="Contract to connect to">
+    </div>
+    <div class="form-inline">
+        <input type="checkbox"  class="form-check-input" id="node-input-AllowInject">
+        <label class="form-check-label" for="node-input-AllowInject">Allow insecure injection</label>
     </div>
 </script>
 
