@@ -14,11 +14,13 @@ module.exports = function(RED) {
           let abi = node.contract.ABI;
 
           if(config.AllowInject) {
-            if(typeof msg.payload.privateKey !== 'undefined') privateKey = msg.payload.privateKey;
-            if(typeof msg.payload.contract !== 'undefined') contractAddress = msg.payload.contract;
-            if(typeof msg.payload.abi !== 'undefined') abi = msg.payload.abi;
+            if((typeof msg.payload !== 'undefined') && (msg.payload !== null)) {
+              if(typeof msg.payload.privateKey !== 'undefined') privateKey = msg.payload.privateKey;
+              if(typeof msg.payload.contract !== 'undefined') contractAddress = msg.payload.contract;
+              if(typeof msg.payload.abi !== 'undefined') abi = msg.payload.abi;
+            }
           }
-          
+
           const provider = new ethers.providers.JsonRpcProvider(node.connection.rpcUrl);
           const wallet = new ethers.Wallet(privateKey,provider);
           const instance = new ethers.Contract(contractAddress, abi, wallet);
