@@ -10,6 +10,10 @@ Call methods or run transactions using rpcUrl and ABI.
 [![npm](https://img.shields.io/npm/v/node-red-contrib-smartcontracttx.svg)](https://www.npmjs.com/package/node-red-contrib-smartcontracttx)
 [![CO2Offset](https://api.corrently.io/v2.0/ghgmanage/statusimg?host=node-red-contrib-smartcontracttx&svg=1)](https://co2offset.io/badge.html?host=node-red-contrib-smartcontracttx)
 
+[![Code Quality](https://api.codiga.io/project/30556/score/svg)](https://app.codiga.io/public/project/30556/node-red-contrib-smartcontracttx/dashboard)
+
+
+
 ## Installation
 
 Install using Node-RED Package Manager (Palett)
