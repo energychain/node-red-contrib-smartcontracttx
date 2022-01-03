@@ -73,6 +73,7 @@ For background compatibility all results are returned on `Output[0]`
 ## Tutorials / Usecases
 
 - [Call Method on SmartContract - ERC20 totalSupply](https://github.com/energychain/node-red-contrib-smartcontracttx/blob/main/docs/UC1_Call_Method.md)
+- [Issue Transaction](https://github.com/energychain/node-red-contrib-smartcontracttx/blob/main/docs/UC2_Transact_SC.md)
 
 ## Maintainer / Imprint
 
