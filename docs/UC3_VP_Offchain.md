@@ -55,4 +55,4 @@ In `msg.payload` we set the JSON:
 
 ## Flow
 
-Available on [GIST](https://gist.github.com/zoernert/1a56ea5a0f59433fdf9b0e62da228f4c)
+Available on [GIST](https://gist.github.com/7e5a178be6a525bf4be6cc87152fed85)
