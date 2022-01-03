@@ -4,7 +4,7 @@
 
 **Allows to run transactions on Ethereum based blockchains from within Node RED**
 
-Call methods or run transactions using rpcUrl and ABI.
+Call methods or run transactions using rpcUrl and ABI of existing contract. Allows OffChain DID/VP signing and verification.
 
 [![npm](https://img.shields.io/npm/dt/node-red-contrib-smartcontracttx.svg)](https://www.npmjs.com/package/node-red-contrib-smartcontracttx)
 [![npm](https://img.shields.io/npm/v/node-red-contrib-smartcontracttx.svg)](https://www.npmjs.com/package/node-red-contrib-smartcontracttx)
@@ -41,6 +41,8 @@ To present a set of information (Object) signed to another party DID-VPs are use
 }
 ```
 
+If `presentTo` is not specified the presentation itself will just be signed and not encrypted.
+
 ### Injection of unsecure values
 
 If configuration option `Allow Insecure Inject` is set additional values might be specified in input `msg.payload` and will overwrite configured values:
@@ -66,7 +68,7 @@ For background compatibility all results are returned on `Output[0]`
 
 `Output[2]` - OffChain Output (JWT). Encrypted DID to be forwarded to other recipient.
 
-`Output[3]` - OffChain Output. Presentations recieved and decoded.
+`Output[3]` - OffChain Output. Presentations received and decoded.
 
 ## Maintainer / Imprint
 

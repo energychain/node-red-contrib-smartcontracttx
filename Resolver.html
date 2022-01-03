@@ -3,9 +3,9 @@
         category: 'config',
         defaults: {
            name: {value:""},
-           rpcUrl: {value:"https://mainnet.infura.io/v3/d254009fd63f4c2bb4596685c0b93d73",required:true},
-           address: {value:"0xdca7ef03e98e0dc2b855be647c39abe984fcf21b",required:true},
-           chainId: {value:'1',required:true},
+           resolverRpcUrl: {value:"https://integration.corrently.io/",required:true},
+           address: {value:"0xda77BEeb5002e10be2F5B63E81Ce8cA8286D4335",required:true},
+           chainId: {value:'6226',required:true},
            chainName: {value:'mainnet',required:true}
        },
        label: function() {
@@ -20,8 +20,8 @@
       <input type="text" id="node-config-input-name" placeholder="Name">
   </div>
   <div class="form-row">
-      <label for="node-input-rpcUrl"><i class="fa fa-tag"></i> rpcUrl </label>
-      <input type="text" id="node-input-rpcUrl" placeholder="RPC to use for Resolver/Registry">
+      <label for="node-config-input-resolverRpcUrl"><i class="fa fa-tag"></i> rpcUrl </label>
+      <input type="text" id="node-config-input-resolverRpcUrl" placeholder="RPC to use for Resolver/Registry">
   </div>
   <div class="form-row">
         <label for="node-config-input-address"><i class="fa fa-tag"></i> DID Registry Address</label>

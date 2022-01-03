@@ -1,7 +1,5 @@
 module.exports = function(node,config) {
   const ethers = require("ethers");
-  const Resolver = require('did-resolver').Resolver;
-  const getResolver = require('ethr-did-resolver').getResolver;
   const EthrDID = require("ethr-did").EthrDID;
   const EthCrypto = require('eth-crypto');
 
@@ -56,7 +54,7 @@ module.exports = function(node,config) {
 
 
     // OffChain presentation encode
-    if((typeof msg.payload !== 'undefined') && (typeof msg.payload.presentTo !== 'undefined') && (typeof msg.payload.presentation !== 'undefined')) {
+    if((typeof msg.payload !== 'undefined') && (typeof msg.payload.presentation !== 'undefined')) {
       async function encryptValue(publicKey,value) {
           if(publicKey.substr(0,9) == 'did:ethr:') publicKey = publicKey.substr(9);
 
@@ -75,10 +73,16 @@ module.exports = function(node,config) {
       }
       try {
         const ethrDid = new EthrDID(keypair);
-        let data =  {
-          presentation: await encryptValue(msg.payload.presentTo,msg.payload.presentation)
+        let data = {
+          presentation:msg.payload.presentation
+        }
+        if(typeof msg.payload.presentTo !== 'undefined') {
+          data = {
+            _presentation: await encryptValue(msg.payload.presentTo,msg.payload.presentation)
+          }
         }
         let presentation = await ethrDid.signJWT(data);
+
         node.send([{payload:presentation},null,{payload:presentation},null]);
       } catch (e) {
         console.error("Error creating Presentation");
@@ -89,13 +93,6 @@ module.exports = function(node,config) {
     // Handle Presentations received (decode)
     if((typeof msg.payload == 'string') && (msg.payload.substr(0,2) == 'ey') && (typeof node.resolver !== 'undefined')) {
       // We might get all we need from configuration!
-
-      const didResolver = new Resolver(getResolver({
-          rpcUrl: node.resolver.rpcUrl,
-          name: node.resolver.chainName,
-          chainId: node.resolver.chainId,
-          registry:node.resolver.address
-      }));
 
       async function decryptValue(privateKey,value) {
           let unstring = EthCrypto.cipher.parse(value);
@@ -122,12 +119,34 @@ module.exports = function(node,config) {
             identifier: wallet.address,
             privateKey: privateKey,
           }
-          const ethrDid = new EthrDID(keypair);
           msg._jwt = msg.payload;
-          msg.payload = await ethrDid.verifyJWT(msg.payload, didResolver);
+
+          const ethrDid = new EthrDID({
+            identifier:keypair.identifier,
+            privateKey: keypair.privateKey,
+            rpcUrl:node.resolver.resolverRpcUrl,
+            chainId:node.resolver.chainId,
+            registry:node.resolver.address
+          });
+
+          const Resolver = require('did-resolver').Resolver;
+          const getResolver = require('ethr-did-resolver').getResolver;
+          const didResolver = new Resolver(getResolver({
+              identifier:keypair.identifier,
+              privateKey: keypair.privateKey,
+              rpcUrl:node.resolver.resolverRpcUrl,
+              chainId:1*node.resolver.chainId,
+              name:node.resolver.chainName,
+              registry:node.resolver.address
+            }));
+          msg.payload = await ethrDid.verifyJWT(msg.payload,didResolver);
           msg.signer = msg.payload.signer;
           msg.issuer = msg.payload.issuer;
-          msg.payload = await decryptValue(privateKey,msg.payload.payload.presentation);
+          if(typeof msg.payload.payload._presentation !== 'undefined') {
+            msg.payload = await decryptValue(privateKey,msg.payload.payload._presentation);
+          } else {
+            msg.payload = msg.payload.payload.presentation;
+          }
           node.send([msg,null,null,msg]);
        } catch(e) {
          console.error("Error resolving Presentation");
