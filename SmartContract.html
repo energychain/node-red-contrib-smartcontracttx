@@ -1,15 +1,21 @@
 <script type="text/javascript">
     RED.nodes.registerType('SmartContract',{
         category: 'Ethereum',
-        color: 'rgb(20, 122, 80)',
+        color: '#3FADB5',
         defaults: {
             name: {value:""},
             Connection: {value:"", type:"DLTConnection"},
             Contract: {value:"", type:"Contract"},
+            Resolver: {value:"", type:"Resolver"},
             AllowInject: {value:"", type:"boolean"}
         },
         inputs:1,
-        outputs:1,
+        outputs:4,
+        outputLabels: [
+        "Result of Blockchain transaction, method call or presentation (DID)",
+        "OnChain Output",
+        "OffChain Output (JWT)",
+        "OffChain Output (Resolved)"],
         icon: "file.png",
         label: function() {
             return this.name||"SmartContract";
@@ -29,6 +35,10 @@
     <div class="form-row">
         <label for="node-input-Contract"><i class="fa fa-tag"></i> Contract</label>
         <input type="text" id="node-input-Contract" placeholder="Contract to connect to">
+    </div>
+    <div class="form-row">
+        <label for="node-input-Resolver"><i class="fa fa-tag"></i> DID Resolver</label>
+        <input type="text" id="node-input-Resolver" placeholder="Resolver Configuration">
     </div>
     <div class="form-inline">
         <input type="checkbox"  class="form-check-input" id="node-input-AllowInject">

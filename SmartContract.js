@@ -3,6 +3,8 @@ module.exports = function(RED) {
         RED.nodes.createNode(this,config);
         this.connection = RED.nodes.getNode(config.Connection);
         this.contract = RED.nodes.getNode(config.Contract);
+        this.resolver = RED.nodes.getNode(config.Resolver);
+        
         const node = this;
 
         const Lib = require("./lib.js");
