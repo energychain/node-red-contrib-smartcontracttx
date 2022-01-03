@@ -234,6 +234,9 @@ Last step is to modify the inject node. As `msg.payload` we specify that the met
 }
 ```
 
+If the method `mint` is called on the SmartContract deployed at  `0xBe96Ba6AF686dDB9D023a2E10BbF72663C6d9AA3` (is TokenFactory), the address given as first argument `0x164a52E0a2bca1c75A3997a7c5A2dbe0aB3e0fF3` will receive the number of tokens given in second argument (here 20).
+
+
 ## Flow
 
 Available on [GIST](https://gist.github.com/zoernert/1a56ea5a0f59433fdf9b0e62da228f4c)
