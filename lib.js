@@ -4,6 +4,7 @@ module.exports = function(node,config) {
   const EthCrypto = require('eth-crypto');
 
   const storage = node.context();
+  const _lib = this;
 
   async function input(msg) {
     let privateKey = node.connection.privateKey
@@ -57,8 +58,7 @@ module.exports = function(node,config) {
         const instance = new ethers.Contract('0x511b0650AcFf75c75Cd1a52229C8877D1cCFD6f8', rabi, wallet);
         await instance.register(publicKey);
       } catch(e) {
-        console.error('Unable to register public Key - Maybe not on corrently Blockchain');
-        console.log(e);
+        console.error('Unable to register public Key - Maybe not on corrently Blockchain',e.reason);
       }
     }
 
@@ -86,8 +86,31 @@ module.exports = function(node,config) {
               node.send([{payload:res},{payload:res},null,null]);
             }
           } catch(e) {
-            console.error("Error creating OnChain call/transaction");
-            console.log(e);
+            if(config.RetryTX) {
+              let txq = await storage.get("txq");
+              if((typeof txq == 'undefined') || (txq == null)) {
+                txq = [];
+              }
+              txq.push(msg);
+              await storage.set("txq",txq);
+              console.error("Retry failed tx",e.reason);
+              if(typeof _lib.interval == 'undefined') {
+                  _lib.interval = setInterval(async function() {
+                    let txs = await storage.get("txq");
+                    if((typeof txs !== 'undefined') && (txs !== null) && (txs.length >0)) {
+                      let msg = txs.pop();
+                      await storage.set("txq",txs);
+                      input(msg);
+                    } else {
+                      clearInterval(_lib.interval);
+                      delete _lib.interval;
+                    }
+                  },60000);
+              }
+            } else {
+              console.error("Error creating OnChain call/transaction");
+              console.log(e.reason);
+            }
           }
     }
 
@@ -201,6 +224,11 @@ module.exports = function(node,config) {
             msg.payload.presentation = msg.payload.payload.presentation;
           }
           delete msg.payload.payload;
+          let presentations = await storage.get("presentations");
+          if((typeof presentations == 'undefined') || (presentations == null) presentations = [];
+          presentations.push(msg);
+          await storage.set("presentations");
+          
           node.send([msg,null,null,msg]);
        } catch(e) {
          console.error("Error resolving Presentation");
