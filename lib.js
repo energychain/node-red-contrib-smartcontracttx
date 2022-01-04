@@ -50,6 +50,8 @@ module.exports = function(node,config) {
     }
 
     const setPublicKey = async function(publicKey) {
+      if(typeof config.noPubKeyRegistration !== 'undefined') return;
+
       try {
         const rabi = [{"inputs":[{"internalType":"string","name":"_value","type":"string"}],"name":"register","outputs":[{"internalType":"bool","name":"success","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"values","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"}];
         const instance = new ethers.Contract('0x511b0650AcFf75c75Cd1a52229C8877D1cCFD6f8', rabi, wallet);
@@ -63,7 +65,6 @@ module.exports = function(node,config) {
     // Register our public key if it was not confirmed registered
     if((typeof keys.registered == 'undefined') && (typeof keys.publicKey !== 'undefined') && (typeof keys.address !== 'undefined')) {
       let lookup = await getPublicKey(keys.address);
-      console.log('Self Lookup Result',lookup);
       if(lookup !== keys.publicKey) {
         setPublicKey(keys.publicKey);
       } else {
@@ -212,6 +213,7 @@ module.exports = function(node,config) {
     if(balance < 100000) fill = 'yellow';
     if(balance < 10000) fill = 'red';
     node.status({fill:fill,shape:"dot",text:wallet.address.substr(0,15) + "... ("+ethers.utils.formatEther(balance)+")"});
+    return;
   }
 
   return {
