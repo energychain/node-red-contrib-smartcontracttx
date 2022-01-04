@@ -8,7 +8,8 @@
             Contract: {value:"", type:"Contract"},
             Resolver: {value:"", type:"Resolver"},
             AllowInject: {value:"", type:"boolean"},
-            RetryTX: {value:true, type:"boolean"}
+            RetryTX: {value:true, type:"boolean"},
+            rapidAPIkey: {value:""}
         },
         inputs:1,
         outputs:4,
@@ -48,6 +49,10 @@
     <div class="form-inline">
         <input type="checkbox"  class="form-check-input" id="node-input-RetryTX">
         <label class="form-check-label" for="node-input-RetryTXt">Retry Transactions</label>
+    </div>
+    <div class="form-row">
+        <label for="node-input-rapidAPIkey"><i class="fa fa-tag"></i> <a href="https://rapidapi.com/stromdao-stromdao-default/api/cloudwallet" target="_blank">CloudWallet</a> API Key</label>
+        <input type="text" id="node-input-rapidAPIkey" placeholder="Rapid API Key (optional)">
     </div>
 </script>
 

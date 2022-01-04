@@ -70,6 +70,10 @@ For background compatibility all results are returned on `Output[0]`
 
 `Output[3]` - OffChain Output. Presentations received and decoded.
 
+## Cloudwallet support
+
+Implementation allows to use [CloudWallet](https://rapidapi.com/stromdao-stromdao-default/api/cloudwallet) to persist received presentations/credentials or digital IDs via https://www.npmjs.com/package/cloudwallet
+
 ## Tutorials / Usecases
 
 - [Call Method on SmartContract - ERC20 totalSupply](https://github.com/energychain/node-red-contrib-smartcontracttx/blob/main/docs/UC1_Call_Method.md)

@@ -4,7 +4,7 @@ module.exports = function(RED) {
         this.connection = RED.nodes.getNode(config.Connection);
         this.contract = RED.nodes.getNode(config.Contract);
         this.resolver = RED.nodes.getNode(config.Resolver);
-        
+
         const node = this;
 
         const Lib = require("./lib.js");
@@ -13,6 +13,8 @@ module.exports = function(RED) {
         node.on('input', function(msg) {
             lib.input(msg);
         });
+
+        lib.load();
     }
     RED.nodes.registerType("SmartContract",SmartContractNode);
 }

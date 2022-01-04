@@ -18,6 +18,7 @@
   "author": "STROMDAO GmbH <dev@stromdao.com>",
   "license": "Apache-2.0",
   "dependencies": {
+    "cloudwallet": "^0.5.3",
     "did-resolver": "^3.1.5",
     "eth-crypto": "^2.1.0",
     "ethers": "^5.5.2",

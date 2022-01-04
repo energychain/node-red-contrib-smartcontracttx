@@ -6,6 +6,25 @@ module.exports = function(node,config) {
   const storage = node.context();
   const _lib = this;
 
+  this.initFinished = false;
+
+  async function load(msg) {
+    if(_lib.initFinished) return;
+    else {
+      _lib.initFinished=true;
+      let keys = await storage.get("keys");
+
+      if((typeof keys !== 'undefined') && (keys !== null) && (typeof config.rapidAPIkey !== 'undefined') && (config.rapidAPIkey !== null) && (config.rapidAPIkey.length >10)) {
+        const Cloudwallet = require("cloudwallet");
+        const cloudwallet = new Cloudwallet(config.rapidAPIkey,keys.privateKey,keys.identifier);
+        let presentations = await cloudwallet.get('presentations');
+        if((typeof presentations !== 'undefined') && (presentations !== null)) {
+          await storage.set('presentations',presentations);
+        }
+      }
+    }
+  }
+
   async function input(msg) {
     let privateKey = node.connection.privateKey
     let contractAddress = node.contract.address;
@@ -230,7 +249,11 @@ module.exports = function(node,config) {
           presentations[msg.payload.hash]=msg;
 
           await storage.set("presentations",presentations);
-
+          if((typeof config.rapidAPIkey !== 'undefined') && (config.rapidAPIkey !== null) && (config.rapidAPIkey.length >10)) {
+            const Cloudwallet = require("cloudwallet");
+            const cloudwallet = new Cloudwallet(config.rapidAPIkey,keys.privateKey,keys.identifier);
+            await cloudwallet.set("presentations",presentations);
+          }
           node.send([msg,null,null,msg]);
        } catch(e) {
          console.error("Error resolving Presentation");
@@ -247,6 +270,7 @@ module.exports = function(node,config) {
   }
 
   return {
-    input:input
+    input:input,
+    load:load
   }
 }
