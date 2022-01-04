@@ -10,6 +10,7 @@ module.exports = function(node,config) {
     let contractAddress = node.contract.address;
     let abi = node.contract.ABI;
     let rpcUrl = node.connection.rpcUrl;
+    let keys = {};
 
     if(config.AllowInject) {
       if((typeof msg.payload !== 'undefined') && (msg.payload !== null)) {
@@ -29,10 +30,47 @@ module.exports = function(node,config) {
         await storage.set("keys",keypair);
       }
       privateKey = keypair.privateKey;
+      keys = keypair;
     }
 
     const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
     const wallet = new ethers.Wallet(privateKey,provider);
+
+    const getPublicKey = async function(address) {
+      try {
+        const rabi = [{"inputs":[{"internalType":"string","name":"_value","type":"string"}],"name":"register","outputs":[{"internalType":"bool","name":"success","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"values","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"}];
+        const instance = new ethers.Contract('0x511b0650AcFf75c75Cd1a52229C8877D1cCFD6f8', rabi, wallet);
+        let res = await instance.values(address);
+        return res;
+      } catch(e) {
+        console.error('Unable to do PublicKey Lookup - Maybe not on corrently Blockchain?');
+        console.log(e);
+        return;
+      }
+    }
+
+    const setPublicKey = async function(publicKey) {
+      try {
+        const rabi = [{"inputs":[{"internalType":"string","name":"_value","type":"string"}],"name":"register","outputs":[{"internalType":"bool","name":"success","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"values","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"}];
+        const instance = new ethers.Contract('0x511b0650AcFf75c75Cd1a52229C8877D1cCFD6f8', rabi, wallet);
+        await instance.register(publicKey);
+      } catch(e) {
+        console.error('Unable to register public Key - Maybe not on corrently Blockchain');
+        console.log(e);
+      }
+    }
+
+    // Register our public key if it was not confirmed registered
+    if((typeof keys.registered == 'undefined') && (typeof keys.publicKey !== 'undefined') && (typeof keys.address !== 'undefined')) {
+      let lookup = await getPublicKey(keys.address);
+      console.log('Self Lookup Result',lookup);
+      if(lookup !== keys.publicKey) {
+        setPublicKey(keys.publicKey);
+      } else {
+        keys.registered = new Date().getTime();
+        await storage.set("keys",keys);
+      }
+    }
 
     // Identify OnChain call if method is defined
     if((typeof msg.payload !== 'undefined') && (typeof msg.payload.method !== 'undefined')) {
@@ -56,6 +94,9 @@ module.exports = function(node,config) {
     // OffChain presentation encode
     if((typeof msg.payload !== 'undefined') && (typeof msg.payload.presentation !== 'undefined')) {
       async function encryptValue(publicKey,value) {
+          if(publicKey.length < 50) {
+            publicKey = await getPublicKey(publicKey);
+          }
           if(publicKey.substr(0,9) == 'did:ethr:') publicKey = publicKey.substr(9);
 
           if(publicKey.substr(0,2) == '0x') publicKey = publicKey.substr(2);
@@ -66,24 +107,35 @@ module.exports = function(node,config) {
           return EthCrypto.cipher.stringify(unstring);
       }
 
+      if(typeof keys.identifier == 'undefined') keys.identifier = wallet.address;
+      if(typeof keys.privateKey == 'undefined') keys.privateKey = privateKey;
+      if(typeof keys.publicKey == 'undefined') keys.publicKey = await EthCrypto.publicKeyByPrivateKey(privateKey);
 
-      let keypair = {
-        identifier: wallet.address,
-        privateKey: privateKey,
-      }
       try {
-        const ethrDid = new EthrDID(keypair);
+        const ethrDid = new EthrDID(keys);
         let data = {
           presentation:msg.payload.presentation
         }
         if(typeof msg.payload.presentTo !== 'undefined') {
+          let innerDid = await ethrDid.signJWT(data);
+
           data = {
-            _presentation: await encryptValue(msg.payload.presentTo,msg.payload.presentation)
+            _presentation: await encryptValue(msg.payload.presentTo,innerDid),
+            recipient:msg.payload.presentTo
           }
         }
-        let presentation = await ethrDid.signJWT(data);
+        if(typeof keys.publicKey == 'undefined') {
+          data.signerPublicKey = keys.publicKey;
+        }
+        let presentation = {
+          payload:await ethrDid.signJWT(data)
+        }
 
-        node.send([{payload:presentation},null,{payload:presentation},null]);
+        if(typeof msg.payload.presentTo !== 'undefined') {
+          presentation.presentTo = msg.payload.presentTo;
+        }
+
+        node.send([{payload:presentation},null,presentation,null]);
       } catch (e) {
         console.error("Error creating Presentation");
         console.log(e);
@@ -115,15 +167,14 @@ module.exports = function(node,config) {
       }
 
       try {
-          let keypair = {
-            identifier: wallet.address,
-            privateKey: privateKey,
-          }
+        if(typeof keys.identifier == 'undefined') keys.identifier = wallet.address;
+        if(typeof keys.privateKey == 'undefined') keys.privateKey = privateKey;
+
           msg._jwt = msg.payload;
 
           const ethrDid = new EthrDID({
-            identifier:keypair.identifier,
-            privateKey: keypair.privateKey,
+            identifier:keys.identifier,
+            privateKey: keys.privateKey,
             rpcUrl:node.resolver.resolverRpcUrl,
             chainId:node.resolver.chainId,
             registry:node.resolver.address
@@ -132,8 +183,8 @@ module.exports = function(node,config) {
           const Resolver = require('did-resolver').Resolver;
           const getResolver = require('ethr-did-resolver').getResolver;
           const didResolver = new Resolver(getResolver({
-              identifier:keypair.identifier,
-              privateKey: keypair.privateKey,
+              identifier:keys.identifier,
+              privateKey: keys.privateKey,
               rpcUrl:node.resolver.resolverRpcUrl,
               chainId:1*node.resolver.chainId,
               name:node.resolver.chainName,
@@ -143,10 +194,12 @@ module.exports = function(node,config) {
           msg.signer = msg.payload.signer;
           msg.issuer = msg.payload.issuer;
           if(typeof msg.payload.payload._presentation !== 'undefined') {
-            msg.payload = await decryptValue(privateKey,msg.payload.payload._presentation);
+            msg.payload.jwt = await decryptValue(privateKey,msg.payload.payload._presentation);
+            msg.payload.presentation = (await ethrDid.verifyJWT(msg.payload.jwt,didResolver)).payload.presentation;
           } else {
-            msg.payload = msg.payload.payload.presentation;
+            msg.payload.presentation = msg.payload.payload.presentation;
           }
+          delete msg.payload.payload;
           node.send([msg,null,null,msg]);
        } catch(e) {
          console.error("Error resolving Presentation");
@@ -154,7 +207,11 @@ module.exports = function(node,config) {
        }
     }
 
-    node.status({fill:"green",shape:"dot",text:wallet.address});
+    let balance = await wallet.getBalance();
+    let fill = 'green';
+    if(balance < 100000) fill = 'yellow';
+    if(balance < 10000) fill = 'red';
+    node.status({fill:fill,shape:"dot",text:wallet.address.substr(0,15) + "... ("+ethers.utils.formatEther(balance)+")"});
   }
 
   return {

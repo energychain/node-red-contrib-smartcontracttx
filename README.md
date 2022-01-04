@@ -74,7 +74,7 @@ For background compatibility all results are returned on `Output[0]`
 
 - [Call Method on SmartContract - ERC20 totalSupply](https://github.com/energychain/node-red-contrib-smartcontracttx/blob/main/docs/UC1_Call_Method.md)
 - [Issue Transaction](https://github.com/energychain/node-red-contrib-smartcontracttx/blob/main/docs/UC2_Transact_SC.md)
-- [Verifiable Presentation](https://github.com/energychain/node-red-contrib-smartcontracttx/blob/main/docs/UC3_VP_Offchain.md)
+- [Basic Verifiable Presentation](https://github.com/energychain/node-red-contrib-smartcontracttx/blob/main/docs/UC3_VP_Offchain.md)
 
 ## Maintainer / Imprint
 
