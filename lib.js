@@ -225,10 +225,12 @@ module.exports = function(node,config) {
           }
           delete msg.payload.payload;
           let presentations = await storage.get("presentations");
-          if((typeof presentations == 'undefined') || (presentations == null) presentations = [];
-          presentations.push(msg);
-          await storage.set("presentations");
-          
+          if((typeof presentations == 'undefined') || (presentations == null)) presentations = {};
+          msg.payload.hash = ethers.utils.id(msg.issuer + '@' + JSON.stringify(msg.payload.presentation));
+          presentations[msg.payload.hash]=msg;
+
+          await storage.set("presentations",presentations);
+
           node.send([msg,null,null,msg]);
        } catch(e) {
          console.error("Error resolving Presentation");
