@@ -2,9 +2,9 @@
 
 <a href="https://stromdao.de/" target="_blank" title="STROMDAO - Digital Energy Infrastructure"><img src="../static/stromdao.png" align="right" height="85px" hspace="30px" vspace="30px"></a>
 
-Bob sends Alice an encrypted and signed message that he wants marry her. Alice takes this as a *Verifiable Credential* , aknowledges with her signature and sends it without encryption to the officials.
+Bob sends Alice an encrypted and signed message that he wants marry her. Alice takes this as a *Verifiable Credential* , acknowledges it with her signature, and sends it without encryption to the officials.
 
-Okey, in this simplified example the officials could only confirm that a signer address `0xc04b...` wants to mary address `0xedEa...`. The addresses that belong to Alice's and Bob's private key. But - why not ... if someone asks both could demonstrate with a new document that they are married.
+Okay, in this simplified example the officials could only confirm that a signer address `0xc04b...` wants to marry address `0xedEa...`. The addresses belong to Alice's and Bob's private keys. But - why not ... if someone asks both could demonstrate with a new document that they are married.
 
 ![Sample Output](../static/uc4_output.png)
 
@@ -30,4 +30,4 @@ As new private keys get generated you need to get some ETHs on the Corrently int
 
 ## Flow
 
-Available on [GIST](https://gist.github.com/7e5a178be6a525bf4be6cc87152fed85)
+Available on [GIST](https://gist.github.com/zoernert/160210ba3d313061dff7da7290dfb2d1)
