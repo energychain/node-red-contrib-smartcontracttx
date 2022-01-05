@@ -9,7 +9,8 @@
             Resolver: {value:"", type:"Resolver"},
             AllowInject: {value:"", type:"boolean"},
             RetryTX: {value:true, type:"boolean"},
-            rapidAPIkey: {value:""}
+            rapidAPIkey: {value:""},
+            pps: {value:""}
         },
         inputs:1,
         outputs:4,
@@ -42,6 +43,14 @@
         <label for="node-input-Resolver"><i class="fa fa-tag"></i> DID Resolver</label>
         <input type="text" id="node-input-Resolver" placeholder="Resolver Configuration">
     </div>
+    <div class="form-row">
+        <label for="node-input-pps"><i class="fa fa-globe"></i> Presentation Processing Service</label>
+        <input type="text" id="node-input-pps" placeholder="URL of REST Microservice (optional)">
+    </div>
+    <div class="form-row">
+        <label for="node-input-rapidAPIkey"><i class="fa fa-key"></i> <a href="https://rapidapi.com/stromdao-stromdao-default/api/cloudwallet" target="_blank">CloudWallet</a> API Key</label>
+        <input type="text" id="node-input-rapidAPIkey" placeholder="Rapid API Key (optional)">
+    </div>
     <div class="form-inline">
         <input type="checkbox"  class="form-check-input" id="node-input-AllowInject">
         <label class="form-check-label" for="node-input-AllowInject">Allow insecure injection</label>
@@ -49,10 +58,6 @@
     <div class="form-inline">
         <input type="checkbox"  class="form-check-input" id="node-input-RetryTX">
         <label class="form-check-label" for="node-input-RetryTXt">Retry Transactions</label>
-    </div>
-    <div class="form-row">
-        <label for="node-input-rapidAPIkey"><i class="fa fa-tag"></i> <a href="https://rapidapi.com/stromdao-stromdao-default/api/cloudwallet" target="_blank">CloudWallet</a> API Key</label>
-        <input type="text" id="node-input-rapidAPIkey" placeholder="Rapid API Key (optional)">
     </div>
 </script>
 

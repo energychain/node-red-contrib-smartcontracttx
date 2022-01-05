@@ -135,7 +135,10 @@ module.exports = function(node,config) {
 
 
     // OffChain presentation encode
-    if((typeof msg.payload !== 'undefined') && (typeof msg.payload.presentation !== 'undefined')) {
+    if(
+       (typeof msg.payload !== 'undefined') &&
+        (typeof msg.payload.presentation !== 'undefined')
+      ) {
       async function encryptValue(publicKey,value) {
           if(publicKey.length < 50) {
             publicKey = await getPublicKey(publicKey);
@@ -186,9 +189,20 @@ module.exports = function(node,config) {
     }
 
     // Handle Presentations received (decode)
-    if((typeof msg.payload == 'string') && (msg.payload.substr(0,2) == 'ey') && (typeof node.resolver !== 'undefined')) {
+    if( (
+          (typeof msg.payload == 'string') &&
+          (msg.payload.substr(0,2) == 'ey') &&
+          (typeof node.resolver !== 'undefined')
+        ) ||
+        (
+          (typeof msg.payload.jwt !== 'undefined') &&
+          (typeof node.resolver !== 'undefined')
+        )
+      ){
       // We might get all we need from configuration!
-
+      if(typeof msg.payload.jwt !== 'undefined') {
+        msg.payload = msg.payload.jwt;
+      }
       async function decryptValue(privateKey,value) {
           let unstring = EthCrypto.cipher.parse(value);
           try {
@@ -247,14 +261,37 @@ module.exports = function(node,config) {
           if((typeof presentations == 'undefined') || (presentations == null)) presentations = {};
           msg.payload.hash = ethers.utils.id(msg.issuer + '@' + JSON.stringify(msg.payload.presentation));
           presentations[msg.payload.hash]=msg;
-
           await storage.set("presentations",presentations);
           if((typeof config.rapidAPIkey !== 'undefined') && (config.rapidAPIkey !== null) && (config.rapidAPIkey.length >10)) {
             const Cloudwallet = require("cloudwallet");
             const cloudwallet = new Cloudwallet(config.rapidAPIkey,keys.privateKey,keys.identifier);
             await cloudwallet.set("presentations",presentations);
           }
-          node.send([msg,null,null,msg]);
+          let doSend = true;
+
+          if((typeof config.pps !== 'undefined') && (config.pps !== null) && (config.pps.length>6)) {
+            try {
+              const axios = require("axios");
+              const ethrDid = new EthrDID(keys);
+              let responds = await axios.post(config.pps,{jwt:await ethrDid.signJWT(msg.payload)});
+              if(typeof responds.data['_action'] !== 'undefined') {
+                if(responds.data['_action'] == 'inject') {
+                  _lib.input(responds.data);
+                  doSend = false;
+                } else
+                if(responds.data['_action'] == 'drop') {
+                  doSend = false;
+                }
+              }
+              msg.payload = responds.data;
+            } catch(e) {
+              console.error("Error in Presentation Processing Service");
+              console.log(e);
+            }
+          }
+          if(doSend) {
+            node.send([msg,null,null,msg]);
+          }
        } catch(e) {
          console.error("Error resolving Presentation");
          console.log(e);
