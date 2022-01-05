@@ -273,10 +273,11 @@ module.exports = function(node,config) {
             try {
               const axios = require("axios");
               const ethrDid = new EthrDID(keys);
+              msg.payload.presentation._issuer = msg.issuer;
               let responds = await axios.post(config.pps,{jwt:await ethrDid.signJWT(msg.payload)});
               if(typeof responds.data['_action'] !== 'undefined') {
                 if(responds.data['_action'] == 'inject') {
-                  _lib.input(responds.data);
+                  input({payload:responds.data});
                   doSend = false;
                 } else
                 if(responds.data['_action'] == 'drop') {

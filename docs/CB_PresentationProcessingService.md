@@ -51,3 +51,73 @@ In the real world, you would not do this in Node-RED and we will only do a kind 
 As a PPS receives an HTTP-Post call, we use a `http-in` Node and configure it:
 
 ![Sample Output](../static/cb_pps_4.png)
+
+The output of this node gets wired to the input of a new SmartContractTX for the PPS. We use this to not have to care about all the ID or JWT related stuff.
+
+Set our PPS Service (it should listen on `http://localhost:1880/eventPPS`) in TicketA node.
+
+![Sample Output](../static/cb_pps_5.png)
+
+Flow: https://gist.github.com/zoernert/c444b15c918f07dfb2bde0cb3b2e86dc
+
+If you do a test run, you might quickly figure out that only the Debug node attached to the PPS produces an output. This is because our PPS does not return anything at the moment.
+
+### Step 4: Business Process
+
+As mentioned previously this is a stupid a hell function.
+
+```Javascript
+let visitorsCount = flow.get(msg.payload.presentation.event.replace(' ','_'));
+
+if((typeof visitorsCount == 'undefined') || (visitorsCount == null)) visitorsCount=0;
+
+visitorsCount++;
+
+flow.set(msg.payload.presentation.event.replace(' ','_'),visitorsCount);
+
+msg.payload = {
+    presentation: {
+        ticketForId:msg.payload.presentation._issuer,
+        visitorNo:visitorsCount
+    }
+}
+return msg;
+```
+
+Finally add an HTTP-Out Responds and connect it to the output of our function.
+
+![Sample Output](../static/cb_pps_6.png)
+
+This is nice! But we want a ticket to forward to Alice. In order to do this, we could trigger an action on the `TicketA` SmartContractTX node that it generates a new presentation to forward to Alice as a receipt.
+
+### Step 5: Event Ticket as Decentralised Identity / Verifiable Presentation
+
+Modify the msg.payload of the function to add an action:
+
+```Javascript
+...
+msg.payload = {
+    _action: 'inject',
+    presentation: {
+        ticketForId:msg.payload.presentation._issuer,
+        visitorNo:visitorsCount
+    }
+}
+...
+```
+
+This will trigger an internal step of the SmartContractTX to handle the PPS responds as a new message. As it is a message as we used it in the first step, a new presentation (JWT/DID) will be issued signed with the key of TicketA.
+
+![Sample Output](../static/cb_pps_7.png)
+
+Flow: https://gist.github.com/zoernert/5cf058d1d79ad332c236a10b39240735
+
+## Conslusion
+
+As a result of the Ticket-Buy-Intent a digitaly signed ticket is waved. It is in JWT format and looks like:
+
+```
+eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NkstUiJ9.eyJpYXQiOjE2NDEzOTE3NjAsInByZXNlbnRhdGlvbiI6eyJ0aWNrZXRGb3JJZCI6ImRpZDpldGhyOjB4MDI3YTQ2MmIyN2Q1MWRkYzZkZDZjMzc1ZmU0MDZmNzI4NzU1NmY2ZjUwZjg5N2E0MDBlNmMyMjFkMmUyYTJjMmFhIiwidmlzaXRvck5vIjoxNn0sImlzcyI6ImRpZDpldGhyOjB4MDIxMjQ4NDZkMzYxN2QyZjI3NzY3ZjEwNDc4YjY0OGM0YTNkZWVkYmQ3ZGZjNWZkMWJmZjEzN2Q0NTY3NmY5ZTg1In0.hf5Mw_MnYBCDNSHKWxC6pHGU98SLXmjnSTjVyBXgqt6MphXzgPcqKyIMjfm4hdeRIpYqYKcEOwoPxDwnzj9ZSwA
+```
+
+It ensures that the ownership (=Alices Identity) and the issuers ownership (=TicketA). So the person checking the ticket at the concert could digitaly check that it is a valid ticket and allow entry to Alice.
