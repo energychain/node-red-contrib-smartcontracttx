@@ -16,7 +16,7 @@ TicketA is an agent for event tickets. Alice wants to visit a particular event a
 
 Add a SmartContractTX Node for Alice. If not setup, create a Connection, Contract, DID Resolver without any particular configuration (leave default settings).
 
-![Sample Output](../cb_pps_1.png)
+![Sample Output](../static/cb_pps_1.png)
 
 Add an Inject Node which provides as `msg.payload` a JSON Object:
 
@@ -28,7 +28,7 @@ Add an Inject Node which provides as `msg.payload` a JSON Object:
 }
 ```
 
-![Sample Output](../cb_pps_2.png)
+![Sample Output](../static/cb_pps_2.png)
 
 You might add a Debug-Node to the third Output of Alice to quickly test the result.
 
@@ -40,7 +40,7 @@ If you click now on the Inject button you will see a JWT in the Debug Console. Y
 
 As the Buy Ticket Intent should be processed by TicketA we will create a second SmartContractTX Node for TicketA and wire the third output of Alice with the Input of it. The configuration settings of this SmartContractTX Node are again all default.
 
-![Sample Output](../cb_pps_3.png)
+![Sample Output](../static/cb_pps_3.png)
 
 You might add a Debug-Node to the fourth Output of TicketA to see the effect of the PPS later.
 
@@ -50,4 +50,4 @@ In the real world, you would not do this in Node-RED and we will only do a kind 
 
 As a PPS receives an HTTP-Post call, we use a `http-in` Node and configure it:
 
-![Sample Output](../cb_pps_4.png)
+![Sample Output](../static/cb_pps_4.png)
