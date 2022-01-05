@@ -35,3 +35,19 @@ You might add a Debug-Node to the third Output of Alice to quickly test the resu
 Flow: https://gist.github.com/zoernert/b388a58d3b1e16bf6504f478e1e3dbe2
 
 If you click now on the Inject button you will see a JWT in the Debug Console. You might quickly check its content using [jwt.io](https://jwt.io).
+
+### Step 2: Add TicketA Node
+
+As the Buy Ticket Intent should be processed by TicketA we will create a second SmartContractTX Node for TicketA and wire the third output of Alice with the Input of it. The configuration settings of this SmartContractTX Node are again all default.
+
+![Sample Output](../cb_pps_3.png)
+
+You might add a Debug-Node to the fourth Output of TicketA to see the effect of the PPS later.
+
+### Step 3: Implement PPS  
+
+In the real world, you would not do this in Node-RED and we will only do a kind of a mock-up to illustrate the usage of a PPS. So what our PPS will do is count the number of tickets sold per event and provide the sequence number (counter) and the owner (here Alice) back in its result.
+
+As a PPS receives an HTTP-Post call, we use a `http-in` Node and configure it:
+
+![Sample Output](../cb_pps_4.png)
