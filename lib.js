@@ -294,8 +294,9 @@ module.exports = function(node,config) {
             node.send([msg,null,null,msg]);
           }
        } catch(e) {
-         console.error("Error resolving Presentation");
-         console.log(e);
+         console.log("Error resolving Presentation, forwarding");
+         msg.payload = msg._jwt;
+         node.send([msg,null,msg,null])
        }
     }
 

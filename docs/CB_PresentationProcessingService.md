@@ -120,4 +120,4 @@ As a result of the Ticket-Buy-Intent a digitaly signed ticket is waved. It is in
 eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NkstUiJ9.eyJpYXQiOjE2NDEzOTE3NjAsInByZXNlbnRhdGlvbiI6eyJ0aWNrZXRGb3JJZCI6ImRpZDpldGhyOjB4MDI3YTQ2MmIyN2Q1MWRkYzZkZDZjMzc1ZmU0MDZmNzI4NzU1NmY2ZjUwZjg5N2E0MDBlNmMyMjFkMmUyYTJjMmFhIiwidmlzaXRvck5vIjoxNn0sImlzcyI6ImRpZDpldGhyOjB4MDIxMjQ4NDZkMzYxN2QyZjI3NzY3ZjEwNDc4YjY0OGM0YTNkZWVkYmQ3ZGZjNWZkMWJmZjEzN2Q0NTY3NmY5ZTg1In0.hf5Mw_MnYBCDNSHKWxC6pHGU98SLXmjnSTjVyBXgqt6MphXzgPcqKyIMjfm4hdeRIpYqYKcEOwoPxDwnzj9ZSwA
 ```
 
-It ensures that the ownership (=Alices Identity) and the issuers ownership (=TicketA). So the person checking the ticket at the concert could digitaly check that it is a valid ticket and allow entry to Alice.
+It ensures that the ownership (=Alices Identity) and the issuers ownership (=TicketA). So the person checking the ticket at the concert could digitaly check that it is a valid ticket and allow entering the venue to Alice.

@@ -80,7 +80,8 @@ Implementation allows to use [CloudWallet](https://rapidapi.com/stromdao-stromda
 - [Issue Transaction](https://github.com/energychain/node-red-contrib-smartcontracttx/blob/main/docs/UC2_Transact_SC.md)
 - [Basic Verifiable Presentation](https://github.com/energychain/node-red-contrib-smartcontracttx/blob/main/docs/UC3_VP_Offchain.md)
 - [Digital Freddy - Digital Heritage](https://github.com/energychain/node-red-contrib-smartcontracttx/blob/main/docs/UC4_VP_DigitalFreddy.md)
-
+- [Using Presentation Processing Services](https://github.com/energychain/node-red-contrib-smartcontracttx/blob/main/docs/CB_PresentationProcessingService.md)
+- [Chinese whispers - Building a JWT/DID Bus]
 ## Maintainer / Imprint
 
 <addr>
