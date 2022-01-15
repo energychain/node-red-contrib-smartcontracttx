@@ -2,9 +2,53 @@ module.exports = function(node,config) {
   const ethers = require("ethers");
   const EthrDID = require("ethr-did").EthrDID;
   const EthCrypto = require('eth-crypto');
-
-  const storage = node.context();
+  let errors = [];
   const _lib = this;
+
+  _lib.sender = function(msgs) { console.log('No sender set!');};
+
+  if((typeof node == 'undefined') || (node == null)) {
+    node = {
+      status: function() {
+
+      },
+      send:function(msgs) {
+        _lib.sender(msgs);
+      },
+      connection: {
+        rpcUrl: "https://integration.corrently.io/"
+      },
+      resolver: {
+        resolverRpcUrl: "https://integration.corrently.io/",
+        chainId: "6226",
+        address:"0xda77BEeb5002e10be2F5B63E81Ce8cA8286D4335",
+        chainName:"mainnet"
+      },
+      contract: {},
+      context: function() {
+        const persist = require('node-persist');
+        return {
+          get: async function(key) {
+            if(typeof persist.values == 'undefined') await persist.init();
+            return await persist.getItem(key);
+          },
+          set: async function(key,value) {
+            if(typeof persist.values == 'undefined') await persist.init();
+            return await persist.setItem(key,value);
+          }
+        }
+      }
+    }
+    if((typeof config !== 'undefined') && (config !== null)) {
+      if(typeof config.connection !== 'undefined') node.connection = config.connection;
+      if(typeof config.contract !== 'undefined') node.contract = config.contract;
+    }
+  }
+  if((typeof config == 'undefined') || (config == null)) {
+    config = {};
+  }
+  const storage = node.context();
+
 
   this.initFinished = false;
 
@@ -63,8 +107,7 @@ module.exports = function(node,config) {
         let res = await instance.values(address);
         return res;
       } catch(e) {
-        console.error('Unable to do PublicKey Lookup - Maybe not on corrently Blockchain?');
-        console.log(e);
+        errors.push('Unable to do PublicKey Lookup - Maybe not on corrently Blockchain?')
         return;
       }
     }
@@ -77,7 +120,8 @@ module.exports = function(node,config) {
         const instance = new ethers.Contract('0x511b0650AcFf75c75Cd1a52229C8877D1cCFD6f8', rabi, wallet);
         await instance.register(publicKey);
       } catch(e) {
-        console.error('Unable to register public Key - Maybe not on corrently Blockchain',e.reason);
+        errors.push('Unable to register public Key - Maybe not on corrently Blockchain');
+        errors.push(e.reason);
       }
     }
 
@@ -99,7 +143,7 @@ module.exports = function(node,config) {
           if(typeof msg.payload.args == 'undefined') msg.payload.args = [];
           try {
             if(typeof instance[msg.payload.method] == 'undefined') {
-              console.log("Unable to find Method in Smart Contract",msg.payload.method,contractAddress);
+              errors.push("Unable to find Method in Smart Contract:"+msg.payload.method,contractAddress);
             } else {
               let res = await instance[msg.payload.method].apply(this,msg.payload.args);
               node.send([{payload:res},{payload:res},null,null]);
@@ -112,7 +156,7 @@ module.exports = function(node,config) {
               }
               txq.push(msg);
               await storage.set("txq",txq);
-              console.error("Retry failed tx",e.reason);
+                errors.push("Retry failed tx:"+e.reason);
               if(typeof _lib.interval == 'undefined') {
                   _lib.interval = setInterval(async function() {
                     let txs = await storage.get("txq");
@@ -127,8 +171,8 @@ module.exports = function(node,config) {
                   },60000);
               }
             } else {
-              console.error("Error creating OnChain call/transaction");
-              console.log(e.reason);
+                errors.push("Error creating OnChain call/transaction");
+                errors.push(e.reason);
             }
           }
     }
@@ -183,8 +227,8 @@ module.exports = function(node,config) {
 
         node.send([{payload:presentation},null,presentation,null]);
       } catch (e) {
-        console.error("Error creating Presentation");
-        console.log(e);
+          errors.push("Error creating Presentation");
+          errors.push(e);
       }
     }
 
@@ -216,8 +260,8 @@ module.exports = function(node,config) {
                 }
               }
           } catch(e) {
-              console.error('Decrypt failed');
-              console.log(e);
+                errors.push('Decrypt failed');
+                errors.push(e);
               unstring = { payload:{} };
           }
           return unstring;
@@ -286,15 +330,15 @@ module.exports = function(node,config) {
               }
               msg.payload = responds.data;
             } catch(e) {
-              console.error("Error in Presentation Processing Service");
-              console.log(e);
+                errors.push("Error in Presentation Processing Service");
+                errors.push(e);
             }
           }
           if(doSend) {
             node.send([msg,null,null,msg]);
           }
        } catch(e) {
-         console.log("Error resolving Presentation, forwarding");
+           errors.push("Error resolving Presentation, forwarding");
          msg.payload = msg._jwt;
          node.send([msg,null,msg,null])
        }
@@ -305,11 +349,19 @@ module.exports = function(node,config) {
     if(balance < 100000) fill = 'yellow';
     if(balance < 10000) fill = 'red';
     node.status({fill:fill,shape:"dot",text:wallet.address.substr(0,15) + "... ("+ethers.utils.formatEther(balance)+")"});
+    if(typeof config.consoleErrors !== 'undefined') {
+      console.error(errors);
+      errors = [];
+    }
     return;
   }
 
   return {
     input:input,
-    load:load
+    load:load,
+    errors:errors,
+    setSender:function(fct) {
+      _lib.sender = fct;
+    }
   }
 }

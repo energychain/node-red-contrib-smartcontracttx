@@ -74,6 +74,53 @@ For background compatibility all results are returned on `Output[0]`
 
 Implementation allows to use [CloudWallet](https://rapidapi.com/stromdao-stromdao-default/api/cloudwallet) to persist received presentations/credentials or digital IDs via https://www.npmjs.com/package/cloudwallet
 
+## Usage as Module (no Node-RED)
+
+You might use this module without having Node-RED available. However this requires to *emulate* some of the stuff Node-RED typically provides.
+
+### Installation
+
+```
+npm i --save node-red-contrib-smartcontracttx
+```
+
+### Hello World (DID)
+
+```javascript
+const SmartContractTX = require("node-red-contrib-smartcontracttx");
+
+const app = async function() {
+  const instanceAlice = new SmartContractTX();
+  let msgAlice = {
+    payload: {
+        presentation: {
+          'Hallo':'Welt'
+        }
+    }
+  }
+
+  // We need to do something with DIDComms (Message Alice wants to send) ...
+  instanceAlice.setSender(async function(msgs) {
+      // As soon as JWT got generated (Alice wants to send) - we forward to a new Bob
+      const instanceBob = new SmartContractTX();
+      let msgBob = msgs[2]; // Alice Output is [2] as we want the JWT
+      console.log('Message from Alice to Bob',msgBob);
+      // If Bob received a message he sends via output[3] to internal processes...
+      instanceBob.setSender(async function(msgs) {
+          console.log('Bob DID',msgs[3]);
+      });
+      await instanceBob.input(msgBob);
+      console.log('End');
+  });
+
+  // Now we are ready to send Message from Alice
+  await instanceAlice.input(msgAlice);
+}
+
+app();
+
+```
+
 ## Tutorials / Usecases
 
 - [Call Method on SmartContract - ERC20 totalSupply](https://github.com/energychain/node-red-contrib-smartcontracttx/blob/main/docs/UC1_Call_Method.md)
