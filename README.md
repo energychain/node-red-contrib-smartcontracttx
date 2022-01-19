@@ -9,6 +9,7 @@ Call methods or run transactions using rpcUrl and ABI of existing contract. Allo
 [![npm](https://img.shields.io/npm/dt/node-red-contrib-smartcontracttx.svg)](https://www.npmjs.com/package/node-red-contrib-smartcontracttx)
 [![npm](https://img.shields.io/npm/v/node-red-contrib-smartcontracttx.svg)](https://www.npmjs.com/package/node-red-contrib-smartcontracttx)
 [![CO2Offset](https://api.corrently.io/v2.0/ghgmanage/statusimg?host=node-red-contrib-smartcontracttx&svg=1)](https://co2offset.io/badge.html?host=node-red-contrib-smartcontracttx)[![Code Quality](https://api.codiga.io/project/30556/score/svg)](https://app.codiga.io/public/project/30556/node-red-contrib-smartcontracttx/dashboard)[![CircleCI](https://circleci.com/gh/energychain/node-red-contrib-smartcontracttx/tree/main.svg?style=svg)](https://circleci.com/gh/energychain/node-red-contrib-smartcontracttx/tree/main)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fenergychain%2Fnode-red-contrib-smartcontracttx.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fenergychain%2Fnode-red-contrib-smartcontracttx?ref=badge_shield)
 
 ## Installation
 
@@ -149,3 +150,6 @@ Project Website: https://co2offset.io/
 
 ## LICENSE
 [Apache-2.0](./LICENSE)
+
+
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fenergychain%2Fnode-red-contrib-smartcontracttx.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fenergychain%2Fnode-red-contrib-smartcontracttx?ref=badge_large)
